@@ -12,7 +12,6 @@ In order to deploy the stacks, you need:
 - AWS CDK. Refer to [Getting started with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
 - AWS Credentials configured in your environment. Refer to
   [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
-- AWS CodeCommit access configured in your environment. Refer to [Setup for HTTPS users using Git credentials](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html)
 - Amazon Bedrock configured in your account.
 - Node >= 18
 - Docker >= 25
