@@ -17,6 +17,8 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { RunnableLambda, RunnableMap, RunnablePassthrough } from "@langchain/core/runnables"
 import { BedrockAgentRuntimeClient, RetrieveCommand } from "@aws-sdk/client-bedrock-agent-runtime";
 
+const SEARCH_TYPE = process.env.SEARCH_TYPE;
+
 export class SelfQueryRetriever {
   #numberOfResults
   #selfQueryModel
@@ -72,7 +74,7 @@ export class SelfQueryRetriever {
         retrievalConfiguration: { 
           vectorSearchConfiguration: {
             numberOfResults: this.#numberOfResults,
-            overrideSearchType: "HYBRID",
+            overrideSearchType: SEARCH_TYPE,
             filter: filters,
           },
         },
@@ -91,7 +93,7 @@ export class SelfQueryRetriever {
           retrievalConfiguration: {
             vectorSearchConfiguration: {
               numberOfResults: this.#numberOfResults,
-              overrideSearchType: "HYBRID",
+              overrideSearchType: SEARCH_TYPE,
             },
           },
         };
