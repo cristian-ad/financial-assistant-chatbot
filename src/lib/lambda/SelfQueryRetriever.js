@@ -93,7 +93,7 @@ export class SelfQueryRetriever {
           retrievalConfiguration: {
             vectorSearchConfiguration: {
               numberOfResults: this.#numberOfResults,
-              overrideSearchType: "HYBRID",
+              overrideSearchType: SEARCH_TYPE,
             },
           },
         };

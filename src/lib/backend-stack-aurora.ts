@@ -188,6 +188,16 @@ export class BackendStackAurora extends Stack {
       value: fnUrl.url,
       exportName: "Backend-RestApiEndpoint",
     });
+
+    new CfnOutput(this, "AuroraSecretsARN", {
+      value: auroraDb.credentialsSecretArn,
+      exportName: "Backend-AuroraSecretsARN",
+    });
+
+    new CfnOutput(this, "RestApiEndpoint", {
+      value: fnUrl.url,
+      exportName: "Backend-RestApiEndpoint",
+    });
     new CfnOutput(this, "LambdaFunctionArn", {
       value: botChainFunction.functionArn,
       exportName: "Backend-LambdaFunctionArn",
