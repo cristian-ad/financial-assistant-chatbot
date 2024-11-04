@@ -29,11 +29,11 @@ import { Cors } from "aws-cdk-lib/aws-apigateway";
 import { NagSuppressions } from "cdk-nag";
 import CognitoResources from "./cognito";
 import { getParsingPromptTemplate } from "./prompts.ts";
-import { bedrock } from "@cdklabs/generative-ai-cdk-constructs";
+import { bedrock, amazonaurora } from "@cdklabs/generative-ai-cdk-constructs";
 
 const path = require("node:path");
 
-export class BackendStack extends Stack {
+export class BackendStackAurora extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -58,7 +58,14 @@ export class BackendStack extends Stack {
       }
     );
 
+    // Dimension of your vector embedding
+    const embeddingsModelVectorDimension = 1024;
+    const auroraDb = new amazonaurora.AmazonAuroraVectorStore(this, "AuroraDefaultVectorStore", {
+      embeddingsModelVectorDimension: embeddingsModelVectorDimension,
+    });
+
     const archiveKnowledgeBase = new bedrock.KnowledgeBase(this, "KnowledgeBase", {
+      vectorStore: auroraDb,
       name: "FinancialDocumentsKnowledgeBase",
       embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
     });
@@ -103,7 +110,7 @@ export class BackendStack extends Stack {
         LANGUAGE: "english",
         LANGCHAIN_VERBOSE: "false",
         KNOWLEDGE_BASE_ID : archiveKnowledgeBase.knowledgeBaseId,
-        SEARCH_TYPE: "HYBRID"
+        SEARCH_TYPE: "SEMANTIC"
       },
     });
     chatHistoryTable.grantReadWriteData(botChainFunction);
