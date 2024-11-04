@@ -1,8 +1,9 @@
 # Financial Assistant powered by Generative AI
 
-This project contains one CDK stack:
+This project contains two CDK stacks to choose:
 
 - BackendStack
+- BackendStackAurora
 
 ## Requirements
 
@@ -38,6 +39,20 @@ $ cdk bootstrap
 
 ## Backend
 
+After synthesizing, you can choose the stack that suits well for your workload (Aurora Postgres with PGvector extension or OpenSearch).
+To choose which option is the best for you, you can consider the first attention points:
+
+* OpenSearch currently supports HYBRID search (Hybrid search takes advantage of the strengths of multiple search algorithms, integrating their unique capabilities to enhance the relevance of returned search results) and has a faster setup time (5 min) when compared to Aurora (15min).
+* Aurora Postgres has low costs in general when compared to OpenSearch, which can be great to experiment for the first time.
+
+Also, we strongly to read this [blogpost](https://aws.amazon.com/blogs/database/key-considerations-when-choosing-a-database-for-your-generative-ai-applications/) to understand key considerations when choosing a database for your generative AI applications.
+
+Once you choose your VectorDB to experiment, you can select the deployment type between them here:
+
+
+<details >
+<summary> <h3>Stack with OpenSearch </h3></summary>
+<br>
 After synthesizing, you can deploy the backend stack by running:
 
 ```shell
@@ -51,6 +66,72 @@ Once the deployment is concluded, CDK will return a few output variables:
 - `UserPoolIdOutput`: The UserPool ID needed for logging into the front-end application
 - `UserPoolClientIdOutput`: The UserPool Client ID needed for logging into the front-end application
 - `IdentityPoolIdOutput`: The Identity Pool ID needed for logging into the front-end application
+- `KnowledgeBaseId`: The Id of the KnowledgeBase created.
+
+After the deploy, you are on track with OpenSearch VectorDB configuration and can go on Document Ingestion part.
+</details>
+
+<details >
+<summary> <h3> Stack with Aurora Postgres </h3></summary>
+<br>
+
+After synthesizing, you can deploy the backend stack of Aurora by running:
+
+$ cdk deploy BackendStackAurora --require-approval=never --outputs-file outputs.json
+
+Once the deployment is concluded, CDK will return a few output variables:
+
+- `RestApiEndpoint`: The Lambda URL that calls the RAG chatbot
+- `LambdaFunctionArn`: The ARN of the Lambda function that calls the RAG chatbot
+- `UserPoolIdOutput`: The UserPool ID needed for logging into the front-end application
+- `UserPoolClientIdOutput`: The UserPool Client ID needed for logging into the front-end application
+- `IdentityPoolIdOutput`: The Identity Pool ID needed for logging into the front-end application
+- `KnowledgeBaseId`: The Id of the KnowledgeBase created.
+- `AuroraSecretsARN`:The ARN of the secrets to connect in the Aurora Database.
+
+First, locate the ARN of the Aurora secrets, through the AWS CLI (remember to set the AWS_DEFAULT_REGION and enviroment variable):
+
+```shell
+$ aws cloudformation describe-stacks --stack-name BackendStackAurora --query "Stacks[0].Outputs[?contains(OutputKey, 'AuroraSecretsARN')].OutputValue"
+
+[
+    "OutputValue": "arn:<your_secret>"
+]
+```
+
+With this value copied, go to the Amazon RDS console, then go to [Query Editor](https://us-east-1.console.aws.amazon.com/rds/home?region=us-east-1#query-editor).
+
+Over there, select the Aurora Serverless Databse that we created via the Backend stack, in *Database username* select **Connect with a Secrets Manager ARN** , in *Secrets manager ARN* paste the ARN that you copied in the previous step. Finally, on the *name of the database* field, fill with **bedrock_vector_db**, as illustrated in the picture below:
+
+![Connect_Database](images/connect_database.png)
+
+Once you have access to Query Editor, run the following code to ensure you have the proper access to Aurora Cluster:
+
+```sql
+SELECT column_name
+FROM information_schema.columns
+WHERE table_schema = 'bedrock_integration'
+  AND table_name = 'bedrock_kb';
+```
+![Check Connection](images/check_connection.png)
+
+If you receive the 4 columns illustrated in the figure above you are on track with the creation. 
+
+Now, we have to create the columns for our metadata fields. As you can see in the step of **Ingesting documents in the Bedrock KnowledgeBase**, you may want to create or define your own metadata fields to increase your accuracy in search retrieval. Based on it, run on query editor your query with the fields you may want to create and it's respective types. 
+
+**REMEMBER**: The same metadata columns you create here you will need to reference afterwards on the **ingestion** part. If not, it will result in errors during ingestion.
+
+The query could be something like this (remember to change according your data):
+```sql
+ALTER TABLE bedrock_integration.bedrock_kb
+ADD COLUMN year INT,
+ADD COLUMN quarter INT,
+ADD COLUMN company VARCHAR(255);
+```
+![Change Columns](images/change_columns.png)
+
+Once you have the field **Status** as **sucess**, you are on track with Aurora Postgres VectorDB configuration and can go on Document Ingestion part.
+</details>
 
 ### Ingesting documents in the Bedrock KnowledgeBase
 
