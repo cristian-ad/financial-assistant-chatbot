@@ -78,9 +78,10 @@ if __name__ == "__main__":
     with open("src/outputs.json", "r") as f:
         outputs = json.load(f)
 
-    knowledgebase_id = outputs["BackendStack"]["KnowledgeBaseId"]
-    knowledgebase_datasource_id = outputs["BackendStack"]["DataSourceId"]
-    s3_bucket_name = outputs["BackendStack"]["ResumeBucketName"]
+    stack_name = list(outputs.keys())[0]
+    knowledgebase_id = outputs[stack_name]["KnowledgeBaseId"]
+    knowledgebase_datasource_id = outputs[stack_name]["DataSourceId"]
+    s3_bucket_name = outputs[stack_name]["ResumeBucketName"]
 
     upload_to_s3(s3_bucket_name)
     time.sleep(2)
@@ -89,4 +90,3 @@ if __name__ == "__main__":
 
     ingestion_job_id = response['ingestionJob']['ingestionJobId']
     check_ingestion_job_status(knowledgebase_datasource_id, ingestion_job_id, knowledgebase_id)
-
