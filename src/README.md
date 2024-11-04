@@ -49,6 +49,8 @@ Also, we strongly to read this [blogpost](https://aws.amazon.com/blogs/database/
 
 Once you choose your VectorDB to experiment, you can select the deployment type between them here:
 
+> [!WARNING] 
+> Deploy just one stack that you choose according to the factors recommended above, deploying both can generate unwanted costs for your account.
 
 <details >
 <summary> <h3>Stack with OpenSearch </h3></summary>
