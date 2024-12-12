@@ -16,9 +16,25 @@
 import sys
 import os
 import boto3
+from botocore.exceptions import NoCredentialsError
 import time
 import json
+from dotenv import load_dotenv
 from datetime import datetime
+
+
+def check_credentials():
+    try:
+        session = boto3.Session()
+        credentials = session.get_credentials()
+        print(f"Access Key: {credentials}")
+        print(f"Access Key: {credentials.access_key}")
+        print(f"Secret Key: {credentials.secret_key}")
+        # Token is None for non-temporary credentials
+        print(f"Token: {credentials.token}")
+    except NoCredentialsError:
+        print("No AWS credentials found!")
+
 
 def upload_to_s3(s3_bucket_name):
     s3 = boto3.client('s3')
@@ -34,6 +50,7 @@ def upload_to_s3(s3_bucket_name):
         except Exception as e:
             print(f"Error uploading {file} to {s3_bucket_name}/{key}: {e}")
 
+
 def start_ingestion(knowledgebase_id, knowledgebase_datasource_id):
     client = boto3.client('bedrock-agent', region_name='us-east-1')
     response = client.start_ingestion_job(
@@ -42,6 +59,7 @@ def start_ingestion(knowledgebase_id, knowledgebase_datasource_id):
         knowledgeBaseId=knowledgebase_id
     )
     return response
+
 
 def check_ingestion_job_status(dataSourceId, ingestionJobId, knowledgeBaseId):
     client = boto3.client('bedrock-agent', region_name='us-east-1')
@@ -78,15 +96,22 @@ if __name__ == "__main__":
     with open("src/outputs.json", "r") as f:
         outputs = json.load(f)
 
+    load_dotenv()
+
     stack_name = list(outputs.keys())[0]
     knowledgebase_id = outputs[stack_name]["KnowledgeBaseId"]
     knowledgebase_datasource_id = outputs[stack_name]["DataSourceId"]
     s3_bucket_name = outputs[stack_name]["ResumeBucketName"]
 
+    print("outputs:", {knowledgebase_id,
+          knowledgebase_datasource_id, s3_bucket_name})
+
+    check_credentials()
     upload_to_s3(s3_bucket_name)
     time.sleep(2)
 
     response = start_ingestion(knowledgebase_id, knowledgebase_datasource_id)
 
     ingestion_job_id = response['ingestionJob']['ingestionJobId']
-    check_ingestion_job_status(knowledgebase_datasource_id, ingestion_job_id, knowledgebase_id)
+    check_ingestion_job_status(
+        knowledgebase_datasource_id, ingestion_job_id, knowledgebase_id)

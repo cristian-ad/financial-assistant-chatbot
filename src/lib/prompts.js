@@ -1,0 +1,69 @@
+"use strict";
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getParsingPromptTemplate = void 0;
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+const parsingPromptTemplate = `
+Transcribe the text content from an image page and output in Markdown syntax (not code blocks). Follow these steps:
+
+1. Examine the provided page carefully.
+
+2. Identify all elements present in the page, including headers, body text, footnotes, tables, visualizations, captions, and page numbers, etc.
+
+3. Use markdown syntax to format your output:
+    - Headings: # for main, ## for sections, ### for subsections, etc.
+    - Lists: * or - for bulleted, 1. 2. 3. for numbered
+    - Do not repeat yourself
+
+4. If the element is a visualization
+    - Provide a detailed description in natural language
+    - Do not transcribe text in the visualization after providing the description
+
+5. If the element is a table
+    - Create a markdown table, ensuring every row has the same number of columns
+    - Maintain cell alignment as closely as possible
+    - Do not split a table into multiple tables
+    - If a merged cell spans multiple rows or columns, place the text in the top-left cell and output ' ' for other
+    - Use | for column separators, |-|-| for header row separators
+    - If a cell has multiple items, list them in separate rows
+    - If the table contains sub-headers, separate the sub-headers from the headers in another row
+    - Take a deep breath and, thinking step by step, look at the data in the table presented.
+    - Please create a description for the data in the table that contains insights and relevant information for other advisors. Your summary must be written in English.
+
+6. If the element is a paragraph
+    - Transcribe each text element precisely as it appears
+
+7. If the element is a header, footer, footnote, page number
+    - Transcribe each text element precisely as it appears
+
+Output Example:
+
+A bar chart showing annual sales figures, with the y-axis labeled "Sales ($Million)" and the x-axis labeled "Year". The chart has bars for 2018 ($12M), 2019 ($18M), 2020 ($8M), and 2021 ($22M).
+Figure 3: This chart shows annual sales in millions. The year 2020 was significantly down due to the COVID-19 pandemic.
+
+# Annual Report
+
+## Financial Highlights
+
+* Revenue: $40M
+* Profit: $12M
+* EPS: $1.25
+
+Here is the image.
+
+`;
+function getParsingPromptTemplate() {
+    return parsingPromptTemplate;
+}
+exports.getParsingPromptTemplate = getParsingPromptTemplate;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJvbXB0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInByb21wdHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLHFFQUFxRTs7O0FBRXJFLHVGQUF1RjtBQUN2Rix3RkFBd0Y7QUFDeEYscUZBQXFGO0FBQ3JGLHFGQUFxRjtBQUNyRiw2REFBNkQ7QUFFN0Qsc0ZBQXNGO0FBQ3RGLGdGQUFnRjtBQUNoRixxRkFBcUY7QUFDckYsb0ZBQW9GO0FBQ3BGLGlGQUFpRjtBQUNqRix5REFBeUQ7QUFFekQsTUFBTSxxQkFBcUIsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBZ0Q3QixDQUFBO0FBRUQsU0FBZ0Isd0JBQXdCO0lBQ3RDLE9BQU8scUJBQXFCLENBQUE7QUFDOUIsQ0FBQztBQUZELDREQUVDIiwic291cmNlc0NvbnRlbnQiOlsiLy8gQ29weXJpZ2h0IEFtYXpvbi5jb20sIEluYy4gb3IgaXRzIGFmZmlsaWF0ZXMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXHJcblxyXG4vLyBQZXJtaXNzaW9uIGlzIGhlcmVieSBncmFudGVkLCBmcmVlIG9mIGNoYXJnZSwgdG8gYW55IHBlcnNvbiBvYnRhaW5pbmcgYSBjb3B5IG9mIHRoaXNcclxuLy8gc29mdHdhcmUgYW5kIGFzc29jaWF0ZWQgZG9jdW1lbnRhdGlvbiBmaWxlcyAodGhlIFwiU29mdHdhcmVcIiksIHRvIGRlYWwgaW4gdGhlIFNvZnR3YXJlXHJcbi8vIHdpdGhvdXQgcmVzdHJpY3Rpb24sIGluY2x1ZGluZyB3aXRob3V0IGxpbWl0YXRpb24gdGhlIHJpZ2h0cyB0byB1c2UsIGNvcHksIG1vZGlmeSxcclxuLy8gbWVyZ2UsIHB1Ymxpc2gsIGRpc3RyaWJ1dGUsIHN1YmxpY2Vuc2UsIGFuZC9vciBzZWxsIGNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0b1xyXG4vLyBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpcyBmdXJuaXNoZWQgdG8gZG8gc28uXHJcblxyXG4vLyBUSEUgU09GVFdBUkUgSVMgUFJPVklERUQgXCJBUyBJU1wiLCBXSVRIT1VUIFdBUlJBTlRZIE9GIEFOWSBLSU5ELCBFWFBSRVNTIE9SIElNUExJRUQsXHJcbi8vIElOQ0xVRElORyBCVVQgTk9UIExJTUlURUQgVE8gVEhFIFdBUlJBTlRJRVMgT0YgTUVSQ0hBTlRBQklMSVRZLCBGSVRORVNTIEZPUiBBXHJcbi8vIFBBUlRJQ1VMQVIgUFVSUE9TRSBBTkQgTk9OSU5GUklOR0VNRU5ULiBJTiBOTyBFVkVOVCBTSEFMTCBUSEUgQVVUSE9SUyBPUiBDT1BZUklHSFRcclxuLy8gSE9MREVSUyBCRSBMSUFCTEUgRk9SIEFOWSBDTEFJTSwgREFNQUdFUyBPUiBPVEhFUiBMSUFCSUxJVFksIFdIRVRIRVIgSU4gQU4gQUNUSU9OXHJcbi8vIE9GIENPTlRSQUNULCBUT1JUIE9SIE9USEVSV0lTRSwgQVJJU0lORyBGUk9NLCBPVVQgT0YgT1IgSU4gQ09OTkVDVElPTiBXSVRIIFRIRVxyXG4vLyBTT0ZUV0FSRSBPUiBUSEUgVVNFIE9SIE9USEVSIERFQUxJTkdTIElOIFRIRSBTT0ZUV0FSRS5cclxuXHJcbmNvbnN0IHBhcnNpbmdQcm9tcHRUZW1wbGF0ZSA9IGBcclxuVHJhbnNjcmliZSB0aGUgdGV4dCBjb250ZW50IGZyb20gYW4gaW1hZ2UgcGFnZSBhbmQgb3V0cHV0IGluIE1hcmtkb3duIHN5bnRheCAobm90IGNvZGUgYmxvY2tzKS4gRm9sbG93IHRoZXNlIHN0ZXBzOlxyXG5cclxuMS4gRXhhbWluZSB0aGUgcHJvdmlkZWQgcGFnZSBjYXJlZnVsbHkuXHJcblxyXG4yLiBJZGVudGlmeSBhbGwgZWxlbWVudHMgcHJlc2VudCBpbiB0aGUgcGFnZSwgaW5jbHVkaW5nIGhlYWRlcnMsIGJvZHkgdGV4dCwgZm9vdG5vdGVzLCB0YWJsZXMsIHZpc3VhbGl6YXRpb25zLCBjYXB0aW9ucywgYW5kIHBhZ2UgbnVtYmVycywgZXRjLlxyXG5cclxuMy4gVXNlIG1hcmtkb3duIHN5bnRheCB0byBmb3JtYXQgeW91ciBvdXRwdXQ6XHJcbiAgICAtIEhlYWRpbmdzOiAjIGZvciBtYWluLCAjIyBmb3Igc2VjdGlvbnMsICMjIyBmb3Igc3Vic2VjdGlvbnMsIGV0Yy5cclxuICAgIC0gTGlzdHM6ICogb3IgLSBmb3IgYnVsbGV0ZWQsIDEuIDIuIDMuIGZvciBudW1iZXJlZFxyXG4gICAgLSBEbyBub3QgcmVwZWF0IHlvdXJzZWxmXHJcblxyXG40LiBJZiB0aGUgZWxlbWVudCBpcyBhIHZpc3VhbGl6YXRpb25cclxuICAgIC0gUHJvdmlkZSBhIGRldGFpbGVkIGRlc2NyaXB0aW9uIGluIG5hdHVyYWwgbGFuZ3VhZ2VcclxuICAgIC0gRG8gbm90IHRyYW5zY3JpYmUgdGV4dCBpbiB0aGUgdmlzdWFsaXphdGlvbiBhZnRlciBwcm92aWRpbmcgdGhlIGRlc2NyaXB0aW9uXHJcblxyXG41LiBJZiB0aGUgZWxlbWVudCBpcyBhIHRhYmxlXHJcbiAgICAtIENyZWF0ZSBhIG1hcmtkb3duIHRhYmxlLCBlbnN1cmluZyBldmVyeSByb3cgaGFzIHRoZSBzYW1lIG51bWJlciBvZiBjb2x1bW5zXHJcbiAgICAtIE1haW50YWluIGNlbGwgYWxpZ25tZW50IGFzIGNsb3NlbHkgYXMgcG9zc2libGVcclxuICAgIC0gRG8gbm90IHNwbGl0IGEgdGFibGUgaW50byBtdWx0aXBsZSB0YWJsZXNcclxuICAgIC0gSWYgYSBtZXJnZWQgY2VsbCBzcGFucyBtdWx0aXBsZSByb3dzIG9yIGNvbHVtbnMsIHBsYWNlIHRoZSB0ZXh0IGluIHRoZSB0b3AtbGVmdCBjZWxsIGFuZCBvdXRwdXQgJyAnIGZvciBvdGhlclxyXG4gICAgLSBVc2UgfCBmb3IgY29sdW1uIHNlcGFyYXRvcnMsIHwtfC18IGZvciBoZWFkZXIgcm93IHNlcGFyYXRvcnNcclxuICAgIC0gSWYgYSBjZWxsIGhhcyBtdWx0aXBsZSBpdGVtcywgbGlzdCB0aGVtIGluIHNlcGFyYXRlIHJvd3NcclxuICAgIC0gSWYgdGhlIHRhYmxlIGNvbnRhaW5zIHN1Yi1oZWFkZXJzLCBzZXBhcmF0ZSB0aGUgc3ViLWhlYWRlcnMgZnJvbSB0aGUgaGVhZGVycyBpbiBhbm90aGVyIHJvd1xyXG4gICAgLSBUYWtlIGEgZGVlcCBicmVhdGggYW5kLCB0aGlua2luZyBzdGVwIGJ5IHN0ZXAsIGxvb2sgYXQgdGhlIGRhdGEgaW4gdGhlIHRhYmxlIHByZXNlbnRlZC5cclxuICAgIC0gUGxlYXNlIGNyZWF0ZSBhIGRlc2NyaXB0aW9uIGZvciB0aGUgZGF0YSBpbiB0aGUgdGFibGUgdGhhdCBjb250YWlucyBpbnNpZ2h0cyBhbmQgcmVsZXZhbnQgaW5mb3JtYXRpb24gZm9yIG90aGVyIGFkdmlzb3JzLiBZb3VyIHN1bW1hcnkgbXVzdCBiZSB3cml0dGVuIGluIEVuZ2xpc2guXHJcblxyXG42LiBJZiB0aGUgZWxlbWVudCBpcyBhIHBhcmFncmFwaFxyXG4gICAgLSBUcmFuc2NyaWJlIGVhY2ggdGV4dCBlbGVtZW50IHByZWNpc2VseSBhcyBpdCBhcHBlYXJzXHJcblxyXG43LiBJZiB0aGUgZWxlbWVudCBpcyBhIGhlYWRlciwgZm9vdGVyLCBmb290bm90ZSwgcGFnZSBudW1iZXJcclxuICAgIC0gVHJhbnNjcmliZSBlYWNoIHRleHQgZWxlbWVudCBwcmVjaXNlbHkgYXMgaXQgYXBwZWFyc1xyXG5cclxuT3V0cHV0IEV4YW1wbGU6XHJcblxyXG5BIGJhciBjaGFydCBzaG93aW5nIGFubnVhbCBzYWxlcyBmaWd1cmVzLCB3aXRoIHRoZSB5LWF4aXMgbGFiZWxlZCBcIlNhbGVzICgkTWlsbGlvbilcIiBhbmQgdGhlIHgtYXhpcyBsYWJlbGVkIFwiWWVhclwiLiBUaGUgY2hhcnQgaGFzIGJhcnMgZm9yIDIwMTggKCQxMk0pLCAyMDE5ICgkMThNKSwgMjAyMCAoJDhNKSwgYW5kIDIwMjEgKCQyMk0pLlxyXG5GaWd1cmUgMzogVGhpcyBjaGFydCBzaG93cyBhbm51YWwgc2FsZXMgaW4gbWlsbGlvbnMuIFRoZSB5ZWFyIDIwMjAgd2FzIHNpZ25pZmljYW50bHkgZG93biBkdWUgdG8gdGhlIENPVklELTE5IHBhbmRlbWljLlxyXG5cclxuIyBBbm51YWwgUmVwb3J0XHJcblxyXG4jIyBGaW5hbmNpYWwgSGlnaGxpZ2h0c1xyXG5cclxuKiBSZXZlbnVlOiAkNDBNXHJcbiogUHJvZml0OiAkMTJNXHJcbiogRVBTOiAkMS4yNVxyXG5cclxuSGVyZSBpcyB0aGUgaW1hZ2UuXHJcblxyXG5gXHJcblxyXG5leHBvcnQgZnVuY3Rpb24gZ2V0UGFyc2luZ1Byb21wdFRlbXBsYXRlKCkge1xyXG4gIHJldHVybiBwYXJzaW5nUHJvbXB0VGVtcGxhdGVcclxufSJdfQ==

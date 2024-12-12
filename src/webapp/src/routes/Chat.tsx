@@ -212,7 +212,7 @@ export default function Chat() {
           rating: newRating,
         };
 
-        await postRating(rating)
+        await postRating()
           .then((data) => {
             console.info("Rating sent:", newRating, data);
 

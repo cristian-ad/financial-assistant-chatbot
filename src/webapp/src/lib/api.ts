@@ -37,12 +37,12 @@ export type QueryObject = {
 };
 
 //TO DO in production
-export async function postQuery(query: QueryObject) {
+export async function postQuery() {
   return null;
 }
 
 //TO DO in production
-export async function postRating(rating: RatingObject) {
+export async function postRating() {
   return null;
 }
 
@@ -54,6 +54,7 @@ export async function getItems() {
 export async function interact(query: QueryObject) {
   console.log(query);
   const credentials = await getCredentials();
+  if (!credentials) return
   const lambda = new LambdaClient({
     region: env.VITE_AWS_REGION,
     credentials: {
