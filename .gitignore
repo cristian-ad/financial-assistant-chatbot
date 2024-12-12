@@ -1,3 +1,6 @@
 .DS_Store
 src/lib/lambda/node_modules.zip
 *.env
+data
+data-ahoradoc
+data-old-financial
